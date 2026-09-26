@@ -1,0 +1,204 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -80
+      ],
+      "id": "305a9a8c-2a48-4045-bfd0-de768d8f0f3a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are a UX Data Analyst. Analyze this user feedback regarding a failed Google Photos search from our live survey: \n\"{{ $json[\"YOUR_EXACT_COLUMN_NAME_HERE\"] }}\"\n\nExtract the data and return ONLY a valid JSON object (no markdown, no backticks) with these exact keys:\n- \"intended_target\": What exact photo were they trying to find?\n- \"memory_anchors\": What details did they actually remember?\n- \"system_failure_reason\": Why did the system fail them?\n- \"root_cause_category\": Categorize into exactly ONE of these: [Compositional Query Failure, Metadata/Episodic Mismatch, Translation/Trust Deficit, OCR/Text Degradation]."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        -176
+      ],
+      "id": "6f2d1acb-ae21-4a02-8d00-3b0e560aed33",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "buYQv2LHjXCwoX65",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1WNlyBicjO7STmHlZrh6seMKHkJlq9O9C-JnR_FajgAQ/edit?resourcekey=&gid=1048400076#gid=1048400076",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1048400076,
+          "mode": "list",
+          "cachedResultName": "Form Responses 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WNlyBicjO7STmHlZrh6seMKHkJlq9O9C-JnR_FajgAQ/edit#gid=1048400076"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        272,
+        -16
+      ],
+      "id": "9acc62ea-558e-4576-90ab-d83f46c27161",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "luEwWcOLqsc2cqxP",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1WNlyBicjO7STmHlZrh6seMKHkJlq9O9C-JnR_FajgAQ/edit?resourcekey=&gid=1048400076#gid=1048400076",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 550391281,
+          "mode": "list",
+          "cachedResultName": "AI Responses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1WNlyBicjO7STmHlZrh6seMKHkJlq9O9C-JnR_FajgAQ/edit#gid=550391281"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "finishReason",
+              "displayName": "finishReason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "index",
+              "displayName": "index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        -80
+      ],
+      "id": "1e528ba3-7ea7-44e7-8e4f-4b055fe920dc",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "luEwWcOLqsc2cqxP",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Message a model",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6689dad5-cb01-45e6-a53e-d9bf48ec94b2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "022fdcf8cb84592aae4bf5378c8382b2c3859c2d63b48b006c6919b7bf807bd3"
+  },
+  "nodeGroups": [],
+  "id": "wv9dYQB4Jis4wpDp",
+  "tags": []
+}
